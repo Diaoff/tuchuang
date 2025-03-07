@@ -1,34 +1,51 @@
 name: 自动构建
+
 on:
   push:
-    paths:
-      - 'image/**'  # 仅当photos目录有变更时触发 
+    branches: ["main"]
+
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: '手动触发'
-        required: true
-        default: 'warning'
-      tags:
-        description: 'Comma separated project tags'
-        required: false    
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
+  # Build job
   build:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code 
-        uses: actions/checkout@v4 
-      - name: Generate Gallery Page 
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Generate Gallery Page
         run: |
           # 用脚本动态生成index.html （示例）
           echo '<div class="gallery">' > index.html  
           for img in photos/*; do 
             echo "<img src='$img' alt='${img##*/}'>" >> index.html  
           done 
-          echo '</div>' >> index.html  
-          # 可替换为更复杂的模板引擎（如Jinja2）
-      - name: Deploy to GitHub Pages 
-        uses: peaceiris/actions-gh-pages@v3 
+          echo '</div>' >> index.html
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
