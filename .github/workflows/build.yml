@@ -20,7 +20,7 @@ jobs:
       
       - name: Generate Gallery Page 
         run: |
-          if [ ! -d "photos" ]; then 
+          if [ ! -d "image" ]; then 
             echo "::error::image目录不存在，请检查路径"
             exit 1 
           fi 
