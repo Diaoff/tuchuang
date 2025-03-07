@@ -1,9 +1,9 @@
+
 name: 自动构建
 
 on:
   push:
     branches: ["main"]
-
   workflow_dispatch:
 
 permissions:
@@ -26,17 +26,19 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Generate Gallery Page
         run: |
-          # 用脚本动态生成index.html （示例）
+          # 用脚本动态生成index.html
           echo '<div class="gallery">' > index.html  
           for img in photos/*; do 
             echo "<img src='$img' alt='${img##*/}'>" >> index.html  
           done 
           echo '</div>' >> index.html
-      - name: Deploy to GitHub Pages
+      - name: Build and Deploy
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
+          publish_dir: .
+          enable_jekyll: false
+          keep_files: true
 
   # Deployment job
   deploy:
