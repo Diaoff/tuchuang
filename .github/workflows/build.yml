@@ -1,0 +1,34 @@
+name: Auto Build Gallery 
+on:
+  push:
+    paths:
+      - 'image/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+    steps:
+      - name: Checkout code 
+        uses: actions/checkout@v4 
+      
+      - name: Setup Python 
+        uses: actions/setup-python@v4 
+        with:
+          python-version: '3.10'
+      
+      - name: Install Dependencies 
+        run: pip install jinja2 
+      
+      - name: Generate Gallery Page 
+        run: |
+          if [ ! -d "photos" ]; then 
+            echo "::error::image目录不存在，请检查路径"
+            exit 1 
+          fi 
+          python generate_gallery.py   # 使用模板引擎生成页面 
+      
+      - name: Deploy to GitHub Pages 
+        uses: peaceiris/actions-gh-pages@v3 
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          keep_files: false  # 清理旧文件 
