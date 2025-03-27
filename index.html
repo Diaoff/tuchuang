@@ -35,7 +35,7 @@
         const repoPath = 'tuchuang';
         const apiUrl = `https://api.github.com/repos/${encodeURIComponent('diaoff')}/${encodeURIComponent(repoPath)}/contents/image`;
         //https://api.github.com/repos/diaoff/tuchuang/contents/image
-        alert(apiUrl)
+        //alert(apiUrl)
         // 动态加载图片 
         fetch(apiUrl)
             .then(response => {
@@ -60,7 +60,6 @@
                             alt="${file.name}" 
                             onerror="this.style.display='none'" 
                         >
-                    `;
                     gallery.appendChild(imgCard); 
                 });
             })
